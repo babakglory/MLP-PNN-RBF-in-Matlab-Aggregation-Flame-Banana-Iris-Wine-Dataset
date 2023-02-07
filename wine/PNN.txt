@@ -1,0 +1,133 @@
+clc;
+clear;
+close all;
+
+%% get data
+data = importdata('wine.txt');
+
+%% shuffle data
+[m, n] = size(data);
+[~, idx] = sort(rand(m,1));
+
+for c = 1:m
+    data(c,1:14) = data(idx(c),1:14);
+end
+
+%% splite Data 70/30
+PD = 0.70;
+trainn = data(1:round(PD*length(data)),:); 
+test = data(round(PD*length(data)):end,:);
+
+%% train
+colmn1_train=trainn(:,1);
+colmn2_train=trainn(:,2);
+colmn3_train=trainn(:,3);
+colmn4_train=trainn(:,4);
+colmn5_train=trainn(:,5);
+colmn6_train=trainn(:,6);
+colmn7_train=trainn(:,7);
+colmn8_train=trainn(:,8);
+colmn9_train=trainn(:,9);
+colmn10_train=trainn(:,10);
+colmn11_train=trainn(:,11);
+colmn12_train=trainn(:,12);
+colmn13_train=trainn(:,13);
+
+
+
+colmn1_norm_train=(colmn1_train - mean(colmn1_train)) ./ std(colmn1_train);
+colmn2_norm_train=(colmn2_train - mean(colmn2_train)) ./ std(colmn2_train);
+colmn3_norm_train=(colmn3_train - mean(colmn3_train)) ./ std(colmn3_train);
+colmn4_norm_train=(colmn4_train - mean(colmn4_train)) ./ std(colmn4_train);
+colmn5_norm_train=(colmn5_train - mean(colmn5_train)) ./ std(colmn5_train);
+colmn6_norm_train=(colmn6_train - mean(colmn6_train)) ./ std(colmn6_train);
+colmn7_norm_train=(colmn7_train - mean(colmn7_train)) ./ std(colmn7_train);
+colmn8_norm_train=(colmn8_train - mean(colmn8_train)) ./ std(colmn8_train);
+colmn9_norm_train=(colmn9_train - mean(colmn9_train)) ./ std(colmn9_train);
+colmn10_norm_train=(colmn10_train - mean(colmn10_train)) ./ std(colmn10_train);
+colmn11_norm_train=(colmn11_train - mean(colmn11_train)) ./ std(colmn11_train);
+colmn12_norm_train=(colmn12_train - mean(colmn12_train)) ./ std(colmn12_train);
+colmn13_norm_train=(colmn13_train - mean(colmn13_train)) ./ std(colmn13_train);
+
+
+
+x_train = cat(2,colmn1_norm_train,colmn2_norm_train,colmn3_norm_train,colmn4_norm_train,colmn5_norm_train,colmn6_norm_train,colmn7_norm_train,colmn8_norm_train,colmn9_norm_train,colmn10_norm_train,colmn11_norm_train,colmn12_norm_train,colmn13_norm_train);
+
+x_train = transpose(x_train);
+y_train = transpose(trainn(:,14));
+
+
+%% build model and train
+
+Spread=0.2;
+y_train=ind2vec(y_train);
+net = newpnn(x_train,y_train,Spread);
+
+
+net.divideFcn = 'dividerand';  
+net.divideMode = 'sample'; 
+
+% splite train data for val and train data
+net.divideParam.trainRatio = 80/100;
+net.divideParam.valRatio = 20/100;
+
+net.trainFcn = 'traingd'; 
+net.performFcn = 'mse'; 
+
+net.plotFcns = {'plotregression','plotfit'};
+
+net.trainParam.showWindow=true;
+net.trainParam.showCommandLine=false;
+net.trainParam.show=1;
+net.trainParam.lr=0.003;
+net.trainParam.epochs=30;
+net.trainParam.goal=1e-8;
+net.trainParam.max_fail=20;
+
+%% train the network
+[net,tr] = train(net,x_train,y_train);
+
+
+%% test normalaze and splite 
+colmn1_test = test(:,1);
+colmn2_test = test(:,2);
+colmn3_test = test(:,3);
+colmn4_test = test(:,4);
+colmn5_test = test(:,5);
+colmn6_test = test(:,6);
+colmn7_test = test(:,7);
+colmn8_test = test(:,8);
+colmn9_test = test(:,9);
+colmn10_test = test(:,10);
+colmn11_test = test(:,11);
+colmn12_test = test(:,12);
+colmn13_test = test(:,13);
+
+
+
+colmn1_norm_test = (colmn1_test - mean(colmn1_test)) ./ std(colmn1_test);
+colmn2_norm_test = (colmn2_test - mean(colmn2_test)) ./ std(colmn2_test);
+colmn3_norm_test = (colmn3_test - mean(colmn3_test)) ./ std(colmn3_test);
+colmn4_norm_test = (colmn4_test - mean(colmn4_test)) ./ std(colmn4_test);
+colmn5_norm_test = (colmn5_test - mean(colmn5_test)) ./ std(colmn5_test);
+colmn6_norm_test = (colmn6_test - mean(colmn6_test)) ./ std(colmn6_test);
+colmn7_norm_test = (colmn7_test - mean(colmn7_test)) ./ std(colmn7_test);
+colmn8_norm_test = (colmn8_test - mean(colmn8_test)) ./ std(colmn8_test);
+colmn9_norm_test = (colmn9_test - mean(colmn9_test)) ./ std(colmn9_test);
+colmn10_norm_test = (colmn10_test - mean(colmn10_test)) ./ std(colmn10_test);
+colmn11_norm_test = (colmn11_test - mean(colmn11_test)) ./ std(colmn11_test);
+colmn12_norm_test = (colmn12_test - mean(colmn12_test)) ./ std(colmn12_test);
+colmn13_norm_test = (colmn13_test - mean(colmn13_test)) ./ std(colmn13_test);
+
+x_test = cat(2,colmn1_norm_test,colmn2_norm_test,colmn3_norm_test,colmn4_norm_test,colmn5_norm_test,colmn6_norm_test,colmn7_norm_test,colmn8_norm_test,colmn9_norm_test,colmn10_norm_test,colmn11_norm_test,colmn12_norm_test,colmn13_norm_test);
+
+x_test = transpose(x_test);
+y_test = transpose(test(:,14));
+
+%% test 
+Y = net(x_test);
+Y=vec2ind(Y);
+%% evaluate
+pred = round(Y);
+acc_count = nnz(pred==y_test); 
+acc = acc_count/length(y_test);
